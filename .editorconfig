@@ -1,0 +1,40 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+indent_size = 4
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.{json,yml,yaml}]
+indent_size = 2
+
+[*.cs]
+# Allman braces: opening `{` always on its own line.
+csharp_new_line_before_open_brace = all
+csharp_new_line_before_else = true
+csharp_new_line_before_catch = true
+csharp_new_line_before_finally = true
+csharp_new_line_before_members_in_object_initializers = true
+csharp_new_line_before_members_in_anonymous_types = true
+csharp_new_line_between_query_expression_clauses = true
+
+# JSON DTOs are instantiated only by System.Text.Json reflection.
+dotnet_diagnostic.CA1812.severity = none
+
+# We need public mutable collection setters for System.Text.Json deserialization targets.
+dotnet_diagnostic.CA2227.severity = none
+
+# We deliberately allow primary constructors to remain off — ModSharp's required constructor
+# signature is long and a primary ctor hurts readability in this case.
+dotnet_diagnostic.IDE0290.severity = none
+
+# `this.`-qualification: we use `_field` naming so the prefix already disambiguates instance state.
+# ModSharp's own codebase follows the same convention.
+dotnet_diagnostic.IDE0009.severity = none
+dotnet_style_qualification_for_field = false
+dotnet_style_qualification_for_property = false
+dotnet_style_qualification_for_method = false
+dotnet_style_qualification_for_event = false

@@ -1,0 +1,67 @@
+// =============================================================================
+//  trigger-helper — per-map config for de_dust2
+// =============================================================================
+//
+//  This file FULLY REPLACES the global config when the map is `de_dust2`.
+//  See ../global.jsonc for the full reference of every field below.
+//
+// =============================================================================
+{
+    "entities": [
+        {
+            "name": "trigger_teleport",
+            "glow_type": "pulse",
+            "min_glow_range": 0,
+            "max_glow_range": 4000,
+            "min_size": 0,
+            "max_size": 100000
+        },
+        {
+            "name": "trigger_push",
+            "glow_type": "glow",
+            "min_glow_range": 0,
+            "max_glow_range": 4000,
+            "min_size": 0,
+            "max_size": 100000
+        },
+        // Skip map-spanning trigger_multiple volumes by capping max_size.
+        {
+            "name": "trigger_multiple",
+            "glow_type": "glow",
+            "min_glow_range": 0,
+            "max_glow_range": 4000,
+            "min_size": 0,
+            "max_size": 5000
+        },
+        {
+            "name": "func_button",
+            "glow_type": "pulse",
+            "min_glow_range": 0,
+            "max_glow_range": 1500,
+            "min_size": 0,
+            "max_size": 0
+        },
+        {
+            "name": "func_door*",
+            "glow_type": "glow",
+            "min_glow_range": 0,
+            "max_glow_range": 2000,
+            "min_size": 0,
+            "max_size": 0
+        }
+    ],
+
+    "exclude": [
+        "trigger_multiple_clientside*"
+    ],
+
+    "style": {
+        // Warm orange — easy to spot against dust2's beige palette.
+        "color": {
+            "r": 255,
+            "g": 140,
+            "b": 0,
+            "a": 255
+        }
+    }
+}

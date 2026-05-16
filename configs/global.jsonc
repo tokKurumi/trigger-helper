@@ -1,0 +1,68 @@
+// =============================================================================
+//  trigger-helper — global glow config
+// =============================================================================
+//
+//  This is the FALLBACK config. It is loaded for every map UNLESS a per-map
+//  override file exists at:
+//
+//      configs/TriggerHelper/maps/<map-name>.jsonc
+//
+//  If a per-map file exists, this global config is ignored entirely (no merging).
+//
+//  Each entry in `entities` describes ONE classname (or wildcard) and the glow
+//  settings for it. First-match-wins by file order — put specific names before
+//  wildcard fallbacks.
+//
+//  Wildcard syntax (in `name` and `exclude`):
+//      *   matches zero or more characters   (e.g. "trigger_*"   -> trigger_teleport, trigger_push, …)
+//      ?   matches exactly one character     (e.g. "func_door?"  -> func_door1, func_door2, …)
+//  Matching is case-insensitive. Names without wildcards are O(1) lookups.
+//
+//  glow_type values (both modes spawn a chicken helper prop at the source
+//  entity's bbox center — the source itself is never modified):
+//      "glow"   — static rim-lit highlight on the chicken.
+//      "pulse"  — same as "glow" plus m_bFlashing for a strobe effect.
+//
+//  Range and size filters:
+//      min_glow_range / max_glow_range — clamp where the highlight is visible
+//          (world units). 0 = no clamp on that side.
+//      min_size / max_size — gate by the source entity's bounding-box size,
+//          computed as (length + width) = (maxs.X - mins.X) + (maxs.Y - mins.Y).
+//          Use max_size to skip map-spanning triggers; 0 disables the bound.
+//
+//  Toggle the whole plugin at runtime with the ConVar:
+//      trigger_helper_enabled 0   // disable
+//      trigger_helper_enabled 1   // re-enable
+//
+//  Admin commands (require AdminManager + permission "admin:debug"):
+//      ms_th_debug [classname] [unit]   // list entities, see README
+//      ms_th_reload                     // re-read config from disk
+//
+// =============================================================================
+{
+    "entities": [
+        {
+            "name": "trigger_teleport",
+            "glow_type": "pulse",
+            "min_glow_range": 0,
+            "max_glow_range": 0,
+            "min_size": 0,
+            "max_size": 0
+        }
+    ],
+
+    // Classnames that should NOT be highlighted, regardless of which `entities`
+    // entry matches them. Evaluated before the entries above.
+    "exclude": [],
+
+    "style": {
+        // RGBA color of the highlight (0..255). Default is a cyan that reads
+        // well against most map lighting.
+        "color": {
+            "r": 0,
+            "g": 200,
+            "b": 255,
+            "a": 255
+        }
+    }
+}
