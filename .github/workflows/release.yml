@@ -47,7 +47,7 @@ jobs:
           tar -czf "../${{ steps.version.outputs.archive }}" modules configs
 
       - name: Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ steps.version.outputs.tag }}
           name: TriggerHelper ${{ steps.version.outputs.tag }}
