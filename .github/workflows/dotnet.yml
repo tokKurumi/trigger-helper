@@ -1,0 +1,71 @@
+name: TriggerHelper BUILD
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  PROJECT_PATH: "TriggerHelper.csproj"
+  PROJECT_NAME: "TriggerHelper"
+  DOTNET_VERSION: "10.x"
+
+jobs:
+  build:
+    permissions: write-all
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+      - name: Restore
+        run: dotnet restore ${{ env.PROJECT_PATH }}
+      - name: Build
+        run: dotnet build ${{ env.PROJECT_PATH }} -c Release --no-restore
+
+  publish:
+    if: github.event_name == 'push'
+    permissions: write-all
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+      - name: Restore
+        run: dotnet restore ${{ env.PROJECT_PATH }}
+      - name: Publish
+        run: dotnet publish ${{ env.PROJECT_PATH }} -c Release --no-restore -o ./publish
+      - name: Set build version
+        run: echo "BUILD_NUMBER=$(cat VERSION)" >> "$GITHUB_ENV"
+      - name: Stage release tree
+        run: |
+          mkdir -p stage/modules/${{ env.PROJECT_NAME }}
+          mkdir -p stage/configs/${{ env.PROJECT_NAME }}
+          cp publish/${{ env.PROJECT_NAME }}.dll                 stage/modules/${{ env.PROJECT_NAME }}/
+          cp publish/${{ env.PROJECT_NAME }}.deps.json           stage/modules/${{ env.PROJECT_NAME }}/
+          cp publish/${{ env.PROJECT_NAME }}.runtimeconfig.json  stage/modules/${{ env.PROJECT_NAME }}/
+          cp -r configs/. stage/configs/${{ env.PROJECT_NAME }}/
+      - name: Archive
+        run: |
+          cd stage
+          tar -czf "../${{ env.PROJECT_NAME }}-v.${{ env.BUILD_NUMBER }}.tar.gz" modules configs
+      - name: Publish plugin
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "${{ env.PROJECT_NAME }}-v.${{ env.BUILD_NUMBER }}.tar.gz"
+          name: "${{ env.PROJECT_NAME }}-v.${{ env.BUILD_NUMBER }}"
+          tag: "${{ env.PROJECT_NAME }}-v.${{ env.BUILD_NUMBER }}"
+          generateReleaseNotes: true
+          makeLatest: true
+          allowUpdates: true
+          body: |
+            [Core] ${{ env.PROJECT_NAME }} release ${{ env.BUILD_NUMBER }}.
+            ModSharp plugin for CS2 that highlights mapped entities (triggers, doors, buttons …) with translucent chickens + classname labels.
